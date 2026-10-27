@@ -1,0 +1,28 @@
+# Virtual environment
+.venv/
+venv/
+env/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Checkpoints / model weights
+*.pt
+*.pth
+*.bin
+*.safetensors
+*.ckpt
+checkpoints/
+out/
+logs/
+wandb/
+
+# Jupyter / IDE
+.ipynb_checkpoints/
+.idea/
+.DS_Store
+pyrightconfig.json
+/.vscode
