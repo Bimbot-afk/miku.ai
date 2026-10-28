@@ -38,9 +38,13 @@ class Tokennizator_v1:
 
     def encode(self, text):
         preprocessed = re.split(r'([,.:;?_!"()\']|--|\s)', text)
-
         preprocessed = [
             item.strip() for item in preprocessed if item.strip()
+        ]
+        preprocessed = [
+            item if item in self.srt_to_int
+            else '<unk>'
+            for item in preprocessed
         ]
         
         ids = [self.srt_to_int[s] for s in preprocessed]
