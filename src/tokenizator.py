@@ -1,21 +1,19 @@
 import re
 
 class Tokennizator_v1:
+    def __init__(self, vocab):
+        self.srt_to_int = vocab
+        self.int_to_srt = {i:s for s,i in vocab.items()}
 
     def preprocessed_text(self, raw_text):
         pre_processed = re.split(r'([,.:;?_!"()\']|--|\s)', raw_text)
         pre_processed = [item for item in pre_processed if item.strip()]
         all_words = sorted(set(pre_processed))
-        print(f" Vocabulary size: {len(all_words)}")
 
         vocab = {
             token: integer for integer, token in enumerate(all_words)
         }
         return vocab
-
-    def __init__(self, vocab):
-        self.srt_to_int = vocab
-        self.int_to_srt = {i:s for s,i in vocab.items()}
 
     def encode(self, text):
         preprocessed = re.split(r'([,.:;?_!"()\']|--|\s)', text)
