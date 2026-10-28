@@ -26,6 +26,3 @@ wandb/
 .DS_Store
 pyrightconfig.json
 /.vscode
-
-# examples
-the-veredict.txt
