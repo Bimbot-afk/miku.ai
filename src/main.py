@@ -3,6 +3,7 @@ import requests
 from .tokenizator import Tokennizator_v1 as tkz
 from .dataset import dataset_v1 as dtt
 from torch.utils.data import DataLoader
+import torch
 
 
 if not os.path.exists("data/the-veredict.txt"):
@@ -20,6 +21,10 @@ if not os.path.exists("data/the-veredict.txt"):
 with open("./data/the-veredict.txt", "r", encoding="utf-8") as f:
     raw_text = f.read()
 
+tokenizer_h = tkz({})
+vocab = tokenizer_h.preprocessed_text(raw_text)
+
+tokenizer = tkz(vocab)
 
 def data_loader_v1(txt, batch_size=4, max_len = 256, stride=128, shuffle = True, drop_last = True, num_workers = 0):
     tokenizer_h = tkz({})
@@ -48,3 +53,9 @@ data_iter = iter(dataloader)
 inputs, targets = next(data_iter)
 print("Inputs:\n", inputs)
 print("Targets:\n", targets)
+
+# Embedding Layer
+vocab_size = len(vocab)
+token_embedding = torch.nn.Embedding(vocab_size, 128)
+
+print("aaaa", token_embedding(inputs))
