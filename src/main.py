@@ -1,8 +1,8 @@
 import os
 import requests
 from .tokenizator import Tokennizator_v1 as tkz
-import torch
-
+from .dataset import dataset_v1 as dtt
+from torch.utils.data import DataLoader
 
 
 if not os.path.exists("data/the-veredict.txt"):
@@ -21,28 +21,30 @@ with open("./data/the-veredict.txt", "r", encoding="utf-8") as f:
     raw_text = f.read()
 
 
-tokenizer_h = tkz({})
-vocab = tokenizer_h.preprocessed_text(raw_text)
+def data_loader_v1(txt, batch_size=4, max_len = 256, stride=128, shuffle = True, drop_last = True, num_workers = 0):
+    tokenizer_h = tkz({})
+    vocab = tokenizer_h.preprocessed_text(raw_text)
 
-tokenizer = tkz(vocab)
+    tokenizer = tkz(vocab)
 
-enc = tokenizer.encode(raw_text)
-print(len(enc))
+    dataset = dtt(txt, tokenizer, max_len, stride)
+    
+    dataloader = DataLoader(
+        dataset,
+        batch_size = batch_size,
+        shuffle = shuffle,
+        drop_last = drop_last,
+        num_workers = num_workers
+    )
 
-context_size = 4
+    return dataloader
 
-enc_sample = enc[:50]
+dataloader = data_loader_v1 (
+    raw_text, batch_size=8, max_len=4, stride=1, shuffle=False
+)
 
-x = enc_sample[:context_size]
-y = enc_sample[1:context_size+1]
-print(f" {x}")
-print(f"     {y}")
-print("--------------------------------")
-print(f"{tokenizer.decode(x)}")
-print(f"  {tokenizer.decode(y)}")
+data_iter = iter(dataloader)
 
-for i in range (1, context_size+1):
-    context = enc_sample[:i]
-    desired = enc_sample[i]
-
-    print(tokenizer.decode(context), "---->", tokenizer.decode([desired]))
+inputs, targets = next(data_iter)
+print("Inputs:\n", inputs)
+print("Targets:\n", targets)
