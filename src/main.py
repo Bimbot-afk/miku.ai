@@ -44,8 +44,11 @@ def data_loader_v1(txt, batch_size=4, max_len = 256, stride=128, shuffle = True,
 
     return dataloader
 
+
+max_length = 4
+
 dataloader = data_loader_v1 (
-    raw_text, batch_size=8, max_len=4, stride=1, shuffle=False
+    raw_text, batch_size=8, max_len=max_length, stride=max_length, shuffle=False
 )
 
 data_iter = iter(dataloader)
@@ -56,6 +59,16 @@ print("Targets:\n", targets)
 
 # Embedding Layer
 vocab_size = len(vocab)
-token_embedding = torch.nn.Embedding(vocab_size, 128)
+output_dim = 256
 
-print("aaaa", token_embedding(inputs))
+
+token_embedding_layer = torch.nn.Embedding(vocab_size, output_dim)
+token_embedding = token_embedding_layer(inputs)
+
+context_length = max_length
+position_embedding_layer = torch.nn.Embedding(context_length, output_dim)
+
+position_embedding = position_embedding_layer(torch.arange(max_length))
+
+inputs_embedding = token_embedding + position_embedding
+print("Inputs Embedding:", inputs_embedding.shape)
