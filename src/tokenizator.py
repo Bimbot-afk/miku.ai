@@ -8,6 +8,8 @@ class Tokennizator_v1:
     def preprocessed_text(self, raw_text):
         pre_processed = re.split(r'([,.:;?_!"()\']|--|\s)', raw_text)
         pre_processed = [item for item in pre_processed if item.strip()]
+        pre_processed.insert(0, '<unk>')
+        pre_processed.insert(-1, '<endoftext>')
         all_words = sorted(set(pre_processed))
 
         vocab = {

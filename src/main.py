@@ -72,3 +72,9 @@ position_embedding = position_embedding_layer(torch.arange(max_length))
 
 inputs_embedding = token_embedding + position_embedding
 print("Inputs Embedding:", inputs_embedding.shape)
+
+
+your_journey = "your journey starts with one step"
+encoded_journey = tokenizer.encode(your_journey)
+inpu_journey = torch.tensor(encoded_journey)
+print("Input of tokens:\n", inpu_journey)
