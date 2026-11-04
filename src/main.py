@@ -71,10 +71,87 @@ position_embedding_layer = torch.nn.Embedding(context_length, output_dim)
 position_embedding = position_embedding_layer(torch.arange(max_length))
 
 inputs_embedding = token_embedding + position_embedding
-print("Inputs Embedding:", inputs_embedding.shape)
+
+inputs_example = torch.tensor(
+  [[0.43, 0.15, 0.89],
+   [0.55, 0.87, 0.66], 
+   [0.57, 0.85, 0.64], 
+   [0.22, 0.58, 0.33], 
+   [0.77, 0.25, 0.10], 
+   [0.05, 0.80, 0.55]] 
+)
 
 
-your_journey = "your journey starts with one step"
-encoded_journey = tokenizer.encode(your_journey)
-inpu_journey = torch.tensor(encoded_journey)
-print("Input of tokens:\n", inpu_journey)
+query = inputs_example[1]
+
+attn_scores_2 = torch.empty(inputs_example.shape[0])
+for i, x_i in enumerate(inputs_example):
+    attn_scores_2[i] = torch.dot(query, x_i)
+
+print(attn_scores_2)
+
+res = 0
+
+for idx, element in enumerate(inputs_example[0]):
+    res += inputs_example[0][idx] * query[idx]
+
+print(res)
+print(torch.dot(inputs_example[0], query))
+
+def softmax_naive(x):
+    return torch.exp(x) / torch.exp(x).sum(dim=0)
+
+attn_weights_2_naive = softmax_naive(attn_scores_2)
+
+print("Attention Weights 2 Naive:\n", attn_weights_2_naive)
+print("sum:\n", attn_weights_2_naive.sum())
+
+context_vec_2 = torch.zeros(query.shape[0])
+
+for i, x_i in enumerate(inputs_example):
+    context_vec_2 += attn_weights_2_naive[i] * x_i
+
+print("Context Vector 2:\n", context_vec_2)
+
+
+attn_scores = inputs_example @ inputs_example.T
+attn_weights = torch.softmax(attn_scores, dim=1)
+all_context_vecs = attn_weights @ inputs_example
+
+print("all_context_vecs:\n", all_context_vecs)
+
+x_2 = inputs_example[1]
+d_in = inputs_example.shape[1]
+d_out = 2
+
+torch.manual_seed(123)
+
+w_query = torch.nn.Parameter(torch.rand(d_in, d_out), requires_grad = True)
+w_key = torch.nn.Parameter(torch.rand(d_in, d_out), requires_grad = True)
+w_value = torch.nn.Parameter(torch.rand(d_in, d_out), requires_grad = True)
+
+query_2 = x_2 @ w_query
+key_2 = x_2 @ w_key
+value_2 = x_2 @ w_value
+
+print(query_2)
+
+keys = inputs_example @ w_key
+values = inputs_example @ w_value
+
+
+print("Keys shape:", keys.shape)
+print("Values shape:", values.shape)
+
+key_2 = keys[1]
+attn_score_22 = query_2.dot(key_2)
+print(attn_score_22)
+
+
+attn_scores_2 = query_2 @ keys.T
+print(attn_scores_2)
+
+d_k = keys.shape[1]
+attn_weights_2 = torch.softmax(attn_scores_2 / d_k**0.5, dim=1)
+print(attn_weights_2)
+
