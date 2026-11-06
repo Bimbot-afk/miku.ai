@@ -126,8 +126,8 @@ Target window  (y): [44, 149, 1003, 57]  --> "HAD always thought Jack"
   - [x] Encode / decode functions with `<unk>` token handling
   - [x] Sliding context window pairs ($x \rightarrow y$)
 - [ ] **Phase 2: Data Pipeline & Subword Encoding**
-  - [ ] Byte-Pair Encoding (BPE) integration with `tiktoken`
-  - [ ] PyTorch `Dataset` and `DataLoader` with batching & padding
+  - [ ] Byte-Pair Encoding (BPE) integration
+  - [x] PyTorch `Dataset` and `DataLoader` with batching & padding
 - [ ] **Phase 3: Transformer Architecture**
   - [ ] Token & Positional embeddings
   - [ ] Multi-Head Self-Attention with causal masking
