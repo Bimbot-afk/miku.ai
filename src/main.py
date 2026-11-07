@@ -5,6 +5,9 @@ from torch.utils.data import DataLoader
 
 from .dataset import dataset_v1 as dtt
 from .tokenizator import Tokennizator_v1 as tkz
+from .attention import self_attention_v1 as sa
+from .attention import casual_attention as ca
+from .attention import Multi_head_attention as mha
 
 DATA_PATH = "data/the-veredict.txt"
 DATA_URL = (
@@ -81,80 +84,35 @@ token_embedding = token_embedding_layer(inputs)
 position_embedding = position_embedding_layer(torch.arange(max_length))
 inputs_embedding = token_embedding + position_embedding
 
-inputs_example = torch.tensor(
-    [
-        [0.43, 0.15, 0.89],
-        [0.55, 0.87, 0.66],
-        [0.57, 0.85, 0.64],
-        [0.22, 0.58, 0.33],
-        [0.77, 0.25, 0.10],
-        [0.05, 0.80, 0.55],
-    ]
+inputs = torch.tensor(
+  [[0.43, 0.15, 0.89], # Your     (x^1)
+   [0.55, 0.87, 0.66], # journey  (x^2)
+   [0.57, 0.85, 0.64], # starts   (x^3)
+   [0.22, 0.58, 0.33], # with     (x^4)
+   [0.77, 0.25, 0.10], # one      (x^5)
+   [0.05, 0.80, 0.55]] # step     (x^6)
 )
 
-query = inputs_example[1]
-
-attn_scores_2 = torch.empty(inputs_example.shape[0])
-for i, x_i in enumerate(inputs_example):
-    attn_scores_2[i] = torch.dot(query, x_i)
-
-print(attn_scores_2)
-
-res = sum(
-    inputs_example[0][idx] * query[idx] for idx in range(len(inputs_example[0]))
-)
-
-print(res)
-print(torch.dot(inputs_example[0], query))
-
-attn_weights_2_naive = softmax_naive(attn_scores_2)
-print("Attention Weights 2 Naive:\n", attn_weights_2_naive)
-print("sum:\n", attn_weights_2_naive.sum())
-
-context_vec_2 = torch.zeros(query.shape[0])
-for i, x_i in enumerate(inputs_example):
-    context_vec_2 += attn_weights_2_naive[i] * x_i
-
-print("Context Vector 2:\n", context_vec_2)
-
-attn_scores = inputs_example @ inputs_example.T
-attn_weights = torch.softmax(attn_scores, dim=-1)
-all_context_vecs = attn_weights @ inputs_example
-
-print("all_context_vecs:\n", all_context_vecs)
-
-x_2 = inputs_example[1]
-d_in = inputs_example.shape[1]
+d_in = 3
 d_out = 2
 
-torch.manual_seed(123)
+sa_example = sa(d_in, d_out)
+print(sa_example(inputs))
 
-w_query = torch.nn.Parameter(torch.rand(d_in, d_out), requires_grad=True)
-w_key = torch.nn.Parameter(torch.rand(d_in, d_out), requires_grad=True)
-w_value = torch.nn.Parameter(torch.rand(d_in, d_out), requires_grad=True)
 
-query_2 = x_2 @ w_query
-key_2 = x_2 @ w_key
-value_2 = x_2 @ w_value
+batch = torch.stack([inputs, inputs], dim= 0)
 
-print(query_2)
 
-keys = inputs_example @ w_key
-values = inputs_example @ w_value
+context_length = batch.shape[1]
+ca_example = ca(d_in, d_out,context_length, 0.0)
 
-print("Keys shape:", keys.shape)
-print("Values shape:", values.shape)
+context_vec = ca_example(batch)
+print(context_vec)
+print(context_vec.shape)
 
-key_2 = keys[1]
-attn_score_22 = query_2.dot(key_2)
-print(attn_score_22)
+mha_example = mha(d_in, d_out, context_length, 0.0, num_heads=2)
+context_vecs = mha_example(batch)
 
-attn_scores_2 = query_2 @ keys.T
-print(attn_scores_2)
+print(context_vecs)
 
-d_k = keys.shape[-1]
-attn_weights_2 = torch.softmax(attn_scores_2 / d_k**0.5, dim=-1)
-print(attn_weights_2)
-
-context_vec_2 = attn_weights_2 @ values
-print(context_vec_2)
+print(context_vecs.shape)
