@@ -155,3 +155,5 @@ print(attn_scores_2)
 d_k = keys.shape[-1]
 attn_weights_2 = torch.softmax(attn_scores_2 / d_k**0.5, dim=-1)
 print(attn_weights_2)
+
+# trash commit just to keep the git steak, sorry, will lock in the next 3 hours :(
