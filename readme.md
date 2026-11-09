@@ -1,4 +1,4 @@
-# 🤖 miku.ai
+# miku.ai
 
 <div align="center">
 
@@ -142,7 +142,6 @@ Target window  (y): [44, 149, 1003, 57]  --> "HAD always thought Jack"
 ## References & Acknowledgments
 
 - **Sebastian Raschka** — [*Build a Large Language Model (From Scratch)*](https://github.com/rasbt/LLMs-from-scratch)
-- **OpenAI** — [*Language Models are Unsupervised Multitask Learners* (GPT-2 Paper)](https://cdn.openai.com/better-language-models/language_models_are_unsupervised_multitask_learners.pdf)
 
 ---
 
